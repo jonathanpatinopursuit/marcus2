@@ -1,4 +1,6 @@
 import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.chart import BarChart, Reference
 
 SRC = '/Users/jonathan/Downloads/Sample - Superstore - cleaned.csv'
 OUT = '/Users/jonathan/Downloads/sales_report.xlsx'
@@ -24,12 +26,32 @@ underperform = underperform[underperform['Profit'] < underperform['Profit'].quan
 discount_impact = df.groupby('Discount %').agg(
     Avg_Profit=('Profit', 'mean'), Orders=('Order ID', 'count')).reset_index()
 
+# 6. Region x Category pivot (wide format, complements Region_Category)
+region_pivot = df.pivot_table(values='Sales', index='Region', columns='Category', aggfunc='sum', fill_value=0)
+
+# 7. Top 10 products by sales
+top_products = df.groupby('Product Name')['Sales'].sum().sort_values(ascending=False).head(10).reset_index()
+
 # Export report
-with pd.ExcelWriter(OUT) as writer:
+with pd.ExcelWriter(OUT, engine='openpyxl') as writer:
     region_category.to_excel(writer, sheet_name='Region_Category', index=False)
     perf.to_excel(writer, sheet_name='Product_Performance', index=False)
     monthly_summary.to_excel(writer, sheet_name='Monthly_Trend', index=False)
     underperform.to_excel(writer, sheet_name='Underperformers', index=False)
     discount_impact.to_excel(writer, sheet_name='Discount_Impact', index=False)
+    region_pivot.to_excel(writer, sheet_name='Region_by_Category')
+    top_products.to_excel(writer, sheet_name='Top_Products', index=False)
+
+# Add bar chart for Top Products
+wb = load_workbook(OUT)
+ws = wb['Top_Products']
+chart = BarChart()
+chart.title = "Top 10 Products by Sales"
+data = Reference(ws, min_col=2, min_row=1, max_row=11)
+cats = Reference(ws, min_col=1, min_row=2, max_row=11)
+chart.add_data(data, titles_from_data=True)
+chart.set_categories(cats)
+ws.add_chart(chart, "E2")
+wb.save(OUT)
 
 print(f"Report written to {OUT}")
