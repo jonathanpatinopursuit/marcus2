@@ -1,9 +1,11 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from openpyxl import load_workbook
-from openpyxl.chart import BarChart, Reference
+from openpyxl.drawing.image import Image as XLImage
 
 SRC = '/Users/jonathan/Downloads/Sample - Superstore - cleaned.csv'
 OUT = '/Users/jonathan/Downloads/sales_report.xlsx'
+CHART_PNG = '/Users/jonathan/Downloads/top_products_chart.png'
 
 df = pd.read_csv(SRC, parse_dates=['Order Date', 'Ship Date'])
 df['Month'] = df['Order Date'].dt.to_period('M').astype(str)
@@ -42,16 +44,19 @@ with pd.ExcelWriter(OUT, engine='openpyxl') as writer:
     region_pivot.to_excel(writer, sheet_name='Region_by_Category')
     top_products.to_excel(writer, sheet_name='Top_Products', index=False)
 
-# Add bar chart for Top Products
+# Add bar chart image for Top Products
+plt.figure(figsize=(10, 6))
+plt.bar(top_products['Product Name'], top_products['Sales'])
+plt.xticks(rotation=45, ha='right', fontsize=8)
+plt.title('Top 10 Products by Sales')
+plt.tight_layout()
+plt.savefig(CHART_PNG, dpi=150)
+plt.close()
+
 wb = load_workbook(OUT)
 ws = wb['Top_Products']
-chart = BarChart()
-chart.title = "Top 10 Products by Sales"
-data = Reference(ws, min_col=2, min_row=1, max_row=11)
-cats = Reference(ws, min_col=1, min_row=2, max_row=11)
-chart.add_data(data, titles_from_data=True)
-chart.set_categories(cats)
-ws.add_chart(chart, "E2")
+img = XLImage(CHART_PNG)
+ws.add_image(img, 'E2')
 wb.save(OUT)
 
 print(f"Report written to {OUT}")
