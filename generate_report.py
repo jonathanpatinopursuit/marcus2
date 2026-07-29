@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 from openpyxl.drawing.image import Image as XLImage
 
-SRC = '/Users/jonathan/Downloads/Sample - Superstore - cleaned.csv'
-OUT = '/Users/jonathan/Downloads/sales_report.xlsx'
-CHART_PNG = '/Users/jonathan/Downloads/top_products_chart.png'
-REGION_CHART_PNG = '/Users/jonathan/Downloads/region_category_chart.png'
-MONTHLY_CHART_PNG = '/Users/jonathan/Downloads/monthly_trend_chart.png'
+SRC = 'output/Sample - Superstore - cleaned.csv'
+OUT = 'output/sales_report.xlsx'
+CHART_PNG = 'output/top_products_chart.png'
+REGION_CHART_PNG = 'output/region_category_chart.png'
+MONTHLY_CHART_PNG = 'output/monthly_trend_chart.png'
 
 df = pd.read_csv(SRC, parse_dates=['Order Date', 'Ship Date'])
 df['Month'] = df['Order Date'].dt.to_period('M').astype(str)

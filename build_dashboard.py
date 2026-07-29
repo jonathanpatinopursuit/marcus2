@@ -4,11 +4,11 @@ from openpyxl import Workbook
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-SRC = '/Users/jonathan/Downloads/Sample - Superstore - cleaned.csv'
-OUT = '/Users/jonathan/Downloads/sales_dashboard.xlsx'
-C1_PNG = '/Users/jonathan/Downloads/dash_region_category.png'
-C2_PNG = '/Users/jonathan/Downloads/dash_top_products.png'
-C3_PNG = '/Users/jonathan/Downloads/dash_monthly_trend.png'
+SRC = 'output/Sample - Superstore - cleaned.csv'
+OUT = 'output/sales_dashboard.xlsx'
+C1_PNG = 'output/dash_region_category.png'
+C2_PNG = 'output/dash_top_products.png'
+C3_PNG = 'output/dash_monthly_trend.png'
 
 df = pd.read_csv(SRC, parse_dates=['Order Date', 'Ship Date'])
 df['Month'] = df['Order Date'].dt.to_period('M').astype(str)

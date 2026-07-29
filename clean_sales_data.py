@@ -1,8 +1,8 @@
 import pandas as pd
 
 # Load dataset
-SRC = '/Users/jonathan/Downloads/Sample - Superstore.csv'
-OUT = '/Users/jonathan/Downloads/Sample - Superstore - cleaned.csv'
+SRC = 'data/Sample - Superstore.csv'
+OUT = 'output/Sample - Superstore - cleaned.csv'
 df = pd.read_csv(SRC, encoding='latin1')
 
 # 1. Remove exact duplicate rows
