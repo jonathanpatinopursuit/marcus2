@@ -6,6 +6,8 @@ from openpyxl.drawing.image import Image as XLImage
 SRC = '/Users/jonathan/Downloads/Sample - Superstore - cleaned.csv'
 OUT = '/Users/jonathan/Downloads/sales_report.xlsx'
 CHART_PNG = '/Users/jonathan/Downloads/top_products_chart.png'
+REGION_CHART_PNG = '/Users/jonathan/Downloads/region_category_chart.png'
+MONTHLY_CHART_PNG = '/Users/jonathan/Downloads/monthly_trend_chart.png'
 
 df = pd.read_csv(SRC, parse_dates=['Order Date', 'Ship Date'])
 df['Month'] = df['Order Date'].dt.to_period('M').astype(str)
@@ -53,10 +55,34 @@ plt.tight_layout()
 plt.savefig(CHART_PNG, dpi=150)
 plt.close()
 
+# Region by Category chart (stacked bar)
+plt.figure(figsize=(8, 4))
+region_pivot.plot(kind='bar', stacked=True, ax=plt.gca())
+plt.title('Sales by Region and Category')
+plt.tight_layout()
+plt.savefig(REGION_CHART_PNG, dpi=150)
+plt.close()
+
+# Monthly Trend chart (line)
+plt.figure(figsize=(8, 4))
+plt.plot(monthly_summary['Month'], monthly_summary['Sales'], marker='o')
+plt.xticks(rotation=45, ha='right', fontsize=7)
+plt.title('Monthly Sales Trend')
+plt.tight_layout()
+plt.savefig(MONTHLY_CHART_PNG, dpi=150)
+plt.close()
+
 wb = load_workbook(OUT)
+
 ws = wb['Top_Products']
-img = XLImage(CHART_PNG)
-ws.add_image(img, 'E2')
+ws.add_image(XLImage(CHART_PNG), 'E2')
+
+ws2 = wb['Region_by_Category']
+ws2.add_image(XLImage(REGION_CHART_PNG), 'H2')
+
+ws3 = wb['Monthly_Trend']
+ws3.add_image(XLImage(MONTHLY_CHART_PNG), 'D2')
+
 wb.save(OUT)
 
 print(f"Report written to {OUT}")
